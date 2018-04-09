@@ -11,4 +11,15 @@ library(macleish)
 library(leaflet)
 ```
 
+```{r}
+macleish_layers[["trails"]] # 15 trails, geometry: Linestring, projection is longlat
+
+
+```
+
+
+
+
+
+
 
