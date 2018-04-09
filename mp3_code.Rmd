@@ -20,7 +20,7 @@ macleish_layers[["trails"]] # 15 lines
 trails <- macleish_layers[["trails"]] %>% 
   mutate(length = st_length(geometry)) %>% 
   group_by(name) %>% 
-  mutate(total_length = sum(length))
+  summarize(total_length = sum(length))
 
 leaflet() %>% 
   addTiles() %>% 
