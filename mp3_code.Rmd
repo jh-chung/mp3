@@ -9,9 +9,11 @@ output: html_document
 library(sf)
 library(macleish)
 library(leaflet)
+library(tidyverse)
 ```
 
 ```{r}
+<<<<<<< HEAD
 macleish_layers[["trails"]] # 15 trails, geometry: Linestring, projection is longlat
 
 
@@ -22,4 +24,19 @@ macleish_layers[["trails"]] # 15 trails, geometry: Linestring, projection is lon
 
 
 
+=======
+macleish_layers[["trails"]] # 15 lines
+```
+
+```{r}
+trails <- macleish_layers[["trails"]] %>% 
+  mutate(length = st_length(geometry)) %>% 
+  group_by(name) %>% 
+  mutate(total_length = sum(length))
+
+leaflet() %>% 
+  addTiles() %>% 
+  addPolylines(data = trails, popup = ~name)
+```
+>>>>>>> 3df6cebabcc69657cfaa77abf0ba39c47df82c53
 
