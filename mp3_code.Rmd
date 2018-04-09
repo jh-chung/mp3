@@ -27,4 +27,6 @@ leaflet() %>%
   addPolylines(data = trails, popup = ~name)
 ```
 
-
+```{r}
+st_read("~Downloads/contours250k/CONTOURS250K_ARC.shp")
+```
