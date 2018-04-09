@@ -11,4 +11,6 @@ library(macleish)
 library(leaflet)
 ```
 
-
+```{r}
+macleish_layers[["trails"]] # 15 lines
+```
