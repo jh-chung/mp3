@@ -16,6 +16,8 @@ library(tidyverse)
 macleish_layers[["trails"]] # 15 trails, geometry: Linestring, projection is longlat
 ```
 
+<<<<<<< HEAD
+=======
 
 ```{r}
 macleish_layers[["trails"]] # 15 trails, geometry: Linestring, projection is longlat
