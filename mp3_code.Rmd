@@ -34,4 +34,15 @@ download.file(url, destfile = local_file)
 unzip(local_file)
 ```
 
+```{r}
+contour <- st_read("CONTOURS250K_ARC.shp") %>%
+  st_transform(4326)
+contour
+```
+
+```{r}
+contour %>%
+  select(CONTOUR_FT) %>%
+  plot()
+```
 
