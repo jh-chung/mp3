@@ -13,19 +13,7 @@ library(tidyverse)
 ```
 
 ```{r}
-<<<<<<< HEAD
 macleish_layers[["trails"]] # 15 trails, geometry: Linestring, projection is longlat
-
-
-```
-
-
-
-
-
-
-=======
-macleish_layers[["trails"]] # 15 lines
 ```
 
 ```{r}
@@ -38,5 +26,4 @@ leaflet() %>%
   addTiles() %>% 
   addPolylines(data = trails, popup = ~name)
 ```
->>>>>>> 3df6cebabcc69657cfaa77abf0ba39c47df82c53
 
