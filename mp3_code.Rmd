@@ -27,7 +27,7 @@ leaflet() %>%
   addPolylines(data = trails, popup = ~name)
 ```
 
-```{r, eval=FALSE}
+```{r, eval = FALSE}
 url <- "http://download.massgis.digital.mass.gov/shapefiles/state/contours250k.zip"
 local_file <- basename(url)
 download.file(url, destfile = local_file)
