@@ -27,16 +27,3 @@ leaflet() %>%
   addPolylines(data = trails, popup = ~name)
 ```
 
-<<<<<<< HEAD
-```{r}
-st_read("~Downloads/contours250k/CONTOURS250K_ARC.shp")
-```
-=======
-```{r, eval=FALSE}
-url <- "http://download.massgis.digital.mass.gov/shapefiles/state/contours250k.zip"
-local_file <- basename(url)
-download.file(url, destfile = local_file)
-unzip(local_file)
-```
-
->>>>>>> 54643639ac0cf24014ca8035b6b09e4e165eefdf
