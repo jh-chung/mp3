@@ -1,0 +1,42 @@
+---
+title: "mp3_code"
+author: "Jay-Ho Chung"
+date: "4/9/2018"
+output: html_document
+---
+
+```{r Packaages, message=FALSE, warning=FALSE}
+library(sf)
+library(macleish)
+library(leaflet)
+library(tidyverse)
+library(viridisLite)
+```
+
+```{r Identifying Quickly}
+macleish_layers[["trails"]] # 15 trails, geometry: Linestring, projection is longlat
+
+pal <- colorNumeric()
+```
+
+
+
+```{r}
+trails <- macleish_layers[["trails"]] %>% 
+  mutate(length = st_length(geometry)) %>% 
+  group_by(name) %>% 
+  mutate(total_length = sum(length))
+
+leaflet() %>% 
+  addTiles() %>% 
+  addPolylines(data = trails, popup = ~name , color = ~pal()) 
+
+boundaries <- macleish_layers[["boundaries"]] %>%
+  
+
+elevation <- st_read("~/Downloads/contours250k/CONTOURS250K_ARC.shp")
+
+
+```
+
+
