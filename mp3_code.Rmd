@@ -16,13 +16,6 @@ library(tidyverse)
 macleish_layers[["trails"]] # 15 trails, geometry: Linestring, projection is longlat
 ```
 
-<<<<<<< HEAD
-=======
-
-```{r}
-macleish_layers[["trails"]] # 15 trails, geometry: Linestring, projection is longlat
-```
-
 ```{r}
 trails <- macleish_layers[["trails"]] %>% 
   mutate(length = st_length(geometry)) %>% 
