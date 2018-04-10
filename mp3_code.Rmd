@@ -34,3 +34,25 @@ download.file(url, destfile = local_file)
 unzip(local_file)
 ```
 
+```{r}
+boundary <- macleish_layers[["boundary"]]
+contour <- st_read("CONTOURS250K_ARC.shp") %>%
+  st_transform(4326)
+contour
+macleish_trail <- st_intersects(boundary, contour)
+```
+
+```{r}
+contour %>%
+  select(CONTOUR_FT) %>%
+  plot()
+```
+
+```{r}
+leaflet() %>% 
+  addTiles() %>% 
+  addPolygons(data = boundary)
+# macleish_trail %>% 
+#   plot()
+```
+
