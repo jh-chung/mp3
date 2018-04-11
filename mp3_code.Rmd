@@ -71,5 +71,6 @@ pal <- colorNumeric(
 
 leaflet(data = hiking_trails) %>%
   addTiles() %>%
-  addPolylines(color = ~pal(t_length))
+  addPolylines(color = ~pal(t_length)) %>%
+  addLegend("bottomright", pal = pal, values = ~t_length, title = "Trail Length")
 ```
