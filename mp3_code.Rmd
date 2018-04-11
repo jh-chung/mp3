@@ -62,8 +62,6 @@ hiking_trails <- macleish_layers[["trails"]] %>%
   group_by(name) %>% 
   mutate(t_length = sum(lengt))
 
-hiking_trails
-
 pal <- colorNumeric(
   palette = "viridis",
   domain = hiking_trails$t_length
@@ -74,3 +72,13 @@ leaflet(data = hiking_trails) %>%
   addPolylines(color = ~pal(t_length)) %>%
   addLegend("bottomright", pal = pal, values = ~t_length, title = "Trail Length")
 ```
+
+```{r}
+leaflet() %>%
+  addTiles() %>%
+  addPolylines(data = macleish_layers[["trails"]], color = "black", weight = 3, opacity = .5) %>%
+  addPolylines(data = macleish_layers[["contours_3m"]], weight = 1, opacity = 1)
+```
+
+
+
