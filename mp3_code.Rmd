@@ -56,3 +56,20 @@ leaflet() %>%
 #   plot()
 ```
 
+```{r}
+hiking_trails <- macleish_layers[["trails"]] %>%
+  mutate(lengt = st_length(geometry)) %>% 
+  group_by(name) %>% 
+  mutate(t_length = sum(lengt))
+
+hiking_trails
+
+pal <- colorNumeric(
+  palette = "viridis",
+  domain = hiking_trails$t_length
+)
+
+leaflet(data = hiking_trails) %>%
+  addTiles() %>%
+  addPolylines(color = ~pal(t_length))
+```
