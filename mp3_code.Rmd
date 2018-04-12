@@ -81,11 +81,6 @@ leaflet() %>%
 ```
 
 ```{r}
-leaflet() %>%
-  addTiles() %>%
-  addPolylines(data = macleish_layers[["trails"]], color = "black", weight = 3, opacity = .5) %>%
-  addPolylines(data = macleish_layers[["contours_3m"]], weight = 1, opacity = 1)
-
 m3_contour <- macleish_layers[["contours_3m"]] %>% 
   select(ELEV_M, ELEV_FT, INDEX_ARC, SHAPE_LEN, geometry)
 ```
@@ -93,9 +88,9 @@ m3_contour <- macleish_layers[["contours_3m"]] %>%
 ```{r}
 macleish_cont <- st_intersects(trails,
                                macleish_layers[["contours_3m"]])
-contour_data <- st_join(trails, m3_contour)
+cont_data <- st_join(trails, m3_contour)
 
-contour_data <- contour_data %>% 
+contour_data <- cont_data %>% 
   group_by(name) %>% 
   summarize(low = min(ELEV_FT), high = max(ELEV_FT),
             change = high - low)
