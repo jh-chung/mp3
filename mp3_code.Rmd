@@ -107,7 +107,9 @@ leaflet(contour_data) %>%
                label = ~name) %>% 
   addLegend("bottomright", pal = pal1, 
             values = ~change, 
-            title = "Trail Change in Elevation (ft.)")
+            title = "Trail Change in Elevation",
+            labFormat = labelFormat(suffix = " ft."),
+)
 ```
 
 
