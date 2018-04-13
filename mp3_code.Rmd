@@ -108,8 +108,8 @@ leaflet(contour_data) %>%
   addLegend("bottomright", pal = pal1, 
             values = ~change, 
             title = "Trail Change in Elevation",
-            labFormat = labelFormat(suffix = " ft."),
-)
+            labFormat = labelFormat(suffix = " ft."))
 ```
 
-
+IDEA: Total elevation change / trail length
+Also include layers and see how many times each trail intersects with the contours
