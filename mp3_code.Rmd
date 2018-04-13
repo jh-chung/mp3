@@ -70,15 +70,14 @@ pal <- colorNumeric(
 leaflet(data = hiking_trails) %>%
   addTiles() %>%
   addPolylines(color = ~pal(t_length)) %>%
-  addLegend("bottomright", pal = pal, values = ~t_length, title = "Trail Length", labFormat = labelFormat(suffix =  "m"),
-)
+  addLegend("bottomright", pal = pal, values = ~t_length, title = "Trail Length", labFormat = labelFormat(suffix =  "m"))
 ```
 
 ```{r}
 leaflet() %>%
   addTiles() %>%
   addPolylines(data = macleish_layers[["trails"]], color = "black", weight = 3, opacity = .5) %>%
-  addPolylines(data = macleish_layers[["contours_3m"]], weight = 1, opacity = 1)
+  addPolylines(data = macleish_layers[["contours_3m"]], weight = 1, opacity = .5)
 ```
 
 ```{r}
@@ -109,7 +108,7 @@ leaflet(contour_data) %>%
   addLegend("bottomright", pal = pal1, 
             values = ~change, 
             title = "Trail Change in Elevation",
-            labFormat = labelFormat(suffix = " ft."),
+            labFormat = labelFormat(suffix = " ft.")
 )
 ```
 
