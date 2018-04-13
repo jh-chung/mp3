@@ -112,5 +112,14 @@ leaflet(contour_data) %>%
             labFormat = labelFormat(suffix = " ft."))
 ```
 
+```{r}
+cont_trail <- st_join(trails, contour_data, join = st_within) %>% 
+  mutate(diff_level = change / total_length)
+  # group_by(name.x)
+```
+
+
 IDEA: Total elevation change / trail length
 Also include layers and see how many times each trail intersects with the contours
+
+Also maybe should think about getting units to be the same and maybe thinking of better measure of what makes a trail hard
