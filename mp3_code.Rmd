@@ -100,10 +100,14 @@ pal1 <- colorNumeric(
   domain = contour_data$change
 )
 
-leaflet() %>% 
+leaflet(contour_data) %>% 
   addTiles() %>% 
-  addPolylines(data = trails) %>% 
-  addPolylines(data = contour_data, color = ~pal1(change))
+  # addPolylines(data = trails) %>% 
+  addPolylines(data = contour_data, color = ~pal1(change),
+               label = ~name) %>% 
+  addLegend("bottomright", pal = pal1, 
+            values = ~change, 
+            title = "Trail Change in Elevation (ft.)")
 ```
 
 
