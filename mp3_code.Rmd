@@ -160,16 +160,26 @@ hard_trail <- trail_cont %>%
   filter(level == "Hard")
 ```
 
-
 ```{r}
-qpal <- colorFactor(c("green", "yellow", "red"), 
-                     domain = trail_cont$level) # Assignig a color factor. to the difficulty.
+pal1 <- colorNumeric(
+  palette = "viridis",
+  domain = trail_cont$hard_meas
+)
 
 leaflet(data = trail_cont) %>%
   addTiles(group = "OpenStreetMap") %>%
   addProviderTiles("Esri.WorldTopoMap", group = "Topography") %>%
   addProviderTiles("Esri.WorldImagery", group = "Satellite") %>%
   addProviderTiles("Stamen.TonerLite", group = "Toner Lite") %>%
+  addPolygons(data = macleish_layers[["research"]], weight = 1, group = "Human Presence") %>%
+  addPolygons(data = macleish_layers[["boundary"]], weight = 1, fillOpacity = 0.1, group = "Boundaries" , color = "purple") %>%
+  addPolygons(data = macleish_layers[["buildings"]], 
+              weight = 1, popup = ~name,  color = "grey" , group = "Human Presence") %>%
+  addMarkers(data = macleish_layers[["challenge_courses"]],  group = "Human Presence") %>%
+  addMarkers(data = macleish_layers[["landmarks"]], 
+             popup = ~Label, group = "Human Presence") %>%
+  addPolylines(data = macleish_layers[["streams"]], weight = 1, group = "Nature") %>%
+  addPolygons(data = macleish_layers[["forests"]], weight = 1, group = "Nature") %>%
   addPolylines(data = trail_cont , 
                color = ~qpal(trail_cont$level), 
                label = ~name , group = "All Trails") %>%
@@ -188,9 +198,10 @@ leaflet(data = trail_cont) %>%
             #labFormat = labelFormat(suffix = " NPS Difficulty Scale"))
     addLayersControl(
     baseGroups = c("OpenStreetMap", "Topography", "Satellite", "Toner Lite"),
-    overlayGroups = c("All Trails" , "Easy Trails" , "Medium Trails" , "Hard Trails") ,
+    overlayGroups = c("All Trails" , "Easy Trails" , "Medium Trails" , "Hard Trails" , "Boundaries" , "Nature" , "Human Presence") ,
     options = layersControlOptions(collapsed = FALSE)
   ) 
+
 ```
 
 
