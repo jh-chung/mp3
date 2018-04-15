@@ -135,9 +135,10 @@ Also include layers and see how many times each trail intersects with the contou
 
 Also maybe should think about getting units to be the same and maybe thinking of better measure of what makes a trail hard
 
+
 ```{r (Combing Trails and Contour)}
 trail_cont <- st_join(trails, contour_data, join = st_within , suffix = c("name" = "name")) %>% # st_within is the join type
-  mutate(hard_meas = sqrt(2*(contour_data$change*0.000621371)*(trails$total_length*0.000621371))) %>% # Using the equation from the National Park Service
+  mutate(hard_meas = sqrt(2*(contour_data$change*3.28084)*(trails$total_length*0.000621371))) %>% # Using the equation from the National Park Service
   select(nameNA , change , total_length , hard_meas) %>%
   arrange((hard_meas)) # Want to arrange it
 
