@@ -17,11 +17,11 @@ library(tidyverse)
 library(viridisLite)
 ```
 
-```{r Identifying Quickly}
+```{r Identifying Quickly, eval = FALSE}
 macleish_layers[["trails"]] # 15 trails, geometry: Linestring, projection is longlat
 ```
 
-```{r}
+```{r, eval = FALSE}
 trails <- macleish_layers[["trails"]] %>% 
   mutate(length = st_length(geometry)) %>% 
   group_by(name) %>% 
@@ -116,25 +116,17 @@ leaflet(contour_data) %>%
             labFormat = labelFormat(suffix = " ft."))
 ```
 
-```{r}
+```{r, eval = FALSE}
 cont_trail <- st_join(trails, contour_data, join = st_within) %>% 
   mutate(diff_level = change / total_length)
   # group_by(name.x)
 ```
-
-
 
 ```{r}
 cont_trail <- st_join(trails, contour_data, join = st_within) %>% 
   mutate(hard_meas = sqrt(2*(contour_data$change)*(trails$total_length))) %>%
   arrange(desc(hard_meas))
 ```
-
-IDEA: Total elevation change / trail length
-Also include layers and see how many times each trail intersects with the contours
-
-Also maybe should think about getting units to be the same and maybe thinking of better measure of what makes a trail hard
-
 
 ```{r (Combing Trails and Contour)}
 trail_cont <- st_join(trails, contour_data, join = st_within , suffix = c("name" = "name")) %>% # st_within is the join type
@@ -146,8 +138,6 @@ trail_cont <- st_join(trails, contour_data, join = st_within , suffix = c("name"
   arrange((hard_meas)) %>% # Want to arrange it
   rename("name" = "nameNA")
 ```
-
-res <- df %>% mutate(category=cut(a, breaks=c(-Inf, 0.5, 0.6, Inf), labels=c("low","middle","high")))
 
 ```{r}
 easy_trail <- trail_cont %>% 
