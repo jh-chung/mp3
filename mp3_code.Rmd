@@ -39,7 +39,7 @@ download.file(url, destfile = local_file)
 unzip(local_file)
 ```
 
-```{r}
+```{r, eval = FALSE}
 boundary <- macleish_layers[["boundary"]]
 contour <- st_read("CONTOURS250K_ARC.shp") %>%
   st_transform(4326)
@@ -47,13 +47,13 @@ contour
 macleish_trail <- st_intersects(boundary, contour)
 ```
 
-```{r}
+```{r, eval = FALSE}
 contour %>%
   select(CONTOUR_FT) %>%
   plot()
 ```
 
-```{r}
+```{r, eval = FALSE}
 leaflet() %>% 
   addTiles() %>% 
   addPolygons(data = boundary)
@@ -165,7 +165,7 @@ leaflet(data = trail_cont) %>%
 ```
 
 
-```{r}
+```{r Finding the number of Intersections per Trail}
 ind_trail <- function(name_arg) {
   macleish_layers[["trails"]] %>%
     filter(name == name_arg)
@@ -183,9 +183,7 @@ num_int <- function(true_int) {
 number_int <- function(t_name) {
   num_int(int_trail(ind_trail(t_name)))
 }
-```
 
-```{r}
 number_int("Driveway")
 number_int("Easy Out")
 number_int("entry trail")
