@@ -21,12 +21,14 @@ library(viridisLite)
 macleish_layers[["trails"]] # 15 trails, geometry: Linestring, projection is longlat
 ```
 
-```{r, eval = FALSE}
+```{r}
 trails <- macleish_layers[["trails"]] %>% 
   mutate(length = st_length(geometry)) %>% 
   group_by(name) %>% 
   summarize(total_length = sum(length))
+```
 
+```{r, eval = FALSE}
 leaflet() %>% 
   addTiles() %>% 
   addPolylines(data = trails, popup = ~name)
