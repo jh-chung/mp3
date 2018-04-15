@@ -63,7 +63,7 @@ leaflet() %>%
 #   plot()
 ```
 
-```{r}
+```{r, warning = FALSE}
 hiking_trails <- macleish_layers[["trails"]] %>%
   mutate(lengt = st_length(geometry)) %>% 
   group_by(name) %>% 
@@ -92,7 +92,7 @@ m3_contour <- macleish_layers[["contours_3m"]] %>%
   select(ELEV_M, ELEV_FT, INDEX_ARC, SHAPE_LEN, geometry)
 ```
 
-```{r}
+```{r, warning = FALSE, message = FALSE}
 macleish_cont <- st_intersects(trails,
                                macleish_layers[["contours_3m"]])
 cont_data <- st_join(trails, m3_contour)
@@ -124,13 +124,13 @@ cont_trail <- st_join(trails, contour_data, join = st_within) %>%
   # group_by(name.x)
 ```
 
-```{r}
+```{r, warning = FALSE, message = FALSE}
 cont_trail <- st_join(trails, contour_data, join = st_within) %>% 
   mutate(hard_meas = sqrt(2*(contour_data$change)*(trails$total_length))) %>%
   arrange(desc(hard_meas))
 ```
 
-```{r (Combing Trails and Contour)}
+```{r (Combing Trails and Contour), warning = FALSE, message = FALSE}
 trail_cont <- st_join(trails, contour_data, join = st_within , suffix = c("name" = "name")) %>% # st_within is the join type
   mutate(hard_meas = sqrt(2*(contour_data$change*3.28084)*(trails$total_length*0.000621371))) %>% # Using the equation from the National Park Service
   mutate(level = cut(hard_meas, 
@@ -200,7 +200,7 @@ leaflet(data = trail_cont) %>%
 ```
 
 
-```{r Finding the number of Intersections per Trail}
+```{r Finding the number of Intersections per Trail, message = FALSE}
 ind_trail <- function(name_arg) {
   macleish_layers[["trails"]] %>%
     filter(name == name_arg)
