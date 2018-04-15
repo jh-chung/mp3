@@ -10,33 +10,231 @@ library(sf)
 library(macleish)
 library(leaflet)
 library(tidyverse)
-library(viridisLite)
 ```
 
 ```{r Identifying Quickly}
 macleish_layers[["trails"]] # 15 trails, geometry: Linestring, projection is longlat
-
-pal <- colorNumeric()
 ```
 
 
+```{r (Adding the Elevation Data), eval = FALSE , message = FALSE, warning = FALSE}
+url <- "http://download.massgis.digital.mass.gov/shapefiles/state/contours250k.zip"
+local_file <- basename(url)
+download.file(url, destfile = local_file)
+unzip(local_file)
+```
+
+```{r (Saving the Elevation Data)}
+contour <- st_read("CONTOURS250K_ARC.shp") %>%
+  st_transform(4326)
+contour
+```
+
+```{r (Contour data)}
+contour %>%
+  select(CONTOUR_FT) %>%
+  plot()
+```
+
+```{r Trails}
+# First choosing the trails
+trails <- macleish_layers[["trails"]] %>% 
+  mutate(length = st_length(geometry)) %>% # length is adding it.
+  group_by(name) %>% # showing by name
+  summarize(total_length = sum(length)) # Finding the total length
+
+# Using leaflet
+leaflet() %>% 
+  addTiles() %>% 
+  addPolylines(data = trails, popup = ~name) # Adding polylines
+```
+
+* st_join/intersection somewhere to find the common 
+```{r Boundaries}
+mac_bound <- macleish_layers[["boundary"]]
+
+
+```
+
+* Projection: lcc
+* 50395 features, with 3 variables (linestrings). Lots of features
+
+If you want 1:5000, then you have to download shapefiles by city and town.
+
+# Updates MacLeish
+```{r}
+devtools::install_github("beanumber/macleish")
+library(macleish)
+packageVersion("macleish")
+names(macleish_layers)
+```
+
+Pandoc is versatile, images footnotes, citations comes from Pandoc. The rest is from R Markdown.
+
+# YAML
+YAML is a bunch of options.
+code_folding is one of them.
+---
+title: "Motor Trend Car Road Tests"
+output:
+  html_document:
+    df_print: paged
+---
+This makes it nice.
+
+# Links v. Footnoes
+Use links when the reference is:
+self-explanatory
+tangential
+Use footnotes when the reference:
+requires explanation
+but the article can stand without it
+
+# Images
+`![This is the caption](/url/of/image.png){.class width=100px}`: to include images
+
+# Plot holding
+`fig.show="hold"`, `fig.width=3` # That holds and shows it.
+
+## More images notes
+They have to be publicly accessible
+use Google Images
+relative vs. absolute paths
+
+# Bootstrap themes 
+
+Can choose themes.
+
+
+
+
+---
+title: "mp3_code"
+author: "Jay-Ho Chung"
+date: "4/9/2018"
+output: html_document
+---
+
+```{r Packaages, message=FALSE, warning=FALSE}
+library(sf)
+library(macleish)
+library(leaflet)
+library(tidyverse)
+```
+
+```{r Identifying Quickly}
+macleish_layers[["trails"]] # 15 trails, geometry: Linestring, projection is longlat
+```
 
 ```{r}
 trails <- macleish_layers[["trails"]] %>% 
   mutate(length = st_length(geometry)) %>% 
   group_by(name) %>% 
-  mutate(total_length = sum(length))
+  summarize(total_length = sum(length))
 
 leaflet() %>% 
   addTiles() %>% 
-  addPolylines(data = trails, popup = ~name , color = ~pal()) 
+  addPolylines(data = trails, popup = ~name)
+```
 
-boundaries <- macleish_layers[["boundaries"]] %>%
-  
+```{r, eval=FALSE}
+url <- "http://download.massgis.digital.mass.gov/shapefiles/state/contours250k.zip"
+local_file <- basename(url)
+download.file(url, destfile = local_file)
+unzip(local_file)
+```
 
-elevation <- st_read("~/Downloads/contours250k/CONTOURS250K_ARC.shp")
+```{r}
+boundary <- macleish_layers[["boundary"]]
+contour <- st_read("CONTOURS250K_ARC.shp") %>%
+  st_transform(4326)
+contour
+macleish_trail <- st_intersects(boundary, contour)
+```
 
+```{r}
+contour %>%
+  select(CONTOUR_FT) %>%
+  plot()
+```
 
+```{r}
+leaflet() %>% 
+  addTiles() %>% 
+  addPolygons(data = boundary)
+# macleish_trail %>% 
+#   plot()
+```
+
+```{r}
+hiking_trails <- macleish_layers[["trails"]] %>%
+  mutate(lengt = st_length(geometry)) %>% 
+  group_by(name) %>% 
+  mutate(t_length = sum(lengt))
+
+pal <- colorNumeric(
+  palette = "viridis",
+  domain = hiking_trails$t_length
+)
+
+leaflet(data = hiking_trails) %>%
+  addTiles() %>%
+  addPolylines(color = ~pal(t_length)) %>%
+  addLegend("bottomright", pal = pal, values = ~t_length, title = "Trail Length")
+```
+
+```{r}
+leaflet() %>%
+  addTiles() %>%
+  addPolylines(data = macleish_layers[["trails"]], color = "black", weight = 3, opacity = .5) %>%
+  addPolylines(data = macleish_layers[["contours_3m"]], weight = 1, opacity = 1)
+```
+
+```{r}
+m3_contour <- macleish_layers[["contours_3m"]] %>% 
+  select(ELEV_M, ELEV_FT, INDEX_ARC, SHAPE_LEN, geometry)
+```
+
+```{r}
+macleish_cont <- st_intersects(trails,
+                               macleish_layers[["contours_3m"]])
+cont_data <- st_join(trails, m3_contour)
+
+contour_data <- cont_data %>% 
+  group_by(name) %>% 
+  summarize(low = min(ELEV_FT), high = max(ELEV_FT),
+            change = high - low)
+
+pal1 <- colorNumeric(
+  palette = "viridis",
+  domain = contour_data$change
+)
+
+leaflet() %>% 
+  addTiles() %>% 
+  addPolylines(data = trails) %>% 
+  addPolylines(data = contour_data, color = ~pal1(change)) %>%
+  addLegend("bottomright", 
+            pal = pal1, 
+            values = ~change ,
+            title = "Change in Elevation" , 
+            opacity = 1)
+```
+
+leaflet(data = hiking_trails) %>%
+  addTiles() %>%
+  addPolylines(color = ~pal(t_length)) %>%
+  addLegend("bottomright", pal = pal, values = ~t_length, title = "Trail Length")
+
+```{r}
+leaflet(data = contour_data) %>% 
+  addTiles() %>% 
+  addPolylines(data = trails , color = ~pal1(trails$total_length)) %>% 
+  addPolylines(data = contour_data, color = ~pal1(change))
 ```
 
 
+```{r}
+cont_trail <- st_join(trails, contour_data, join = st_within) %>% 
+  mutate(hard_meas = sqrt(2*(contour_data$change)*(trails$total_length)))
+```
