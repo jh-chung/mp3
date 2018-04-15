@@ -164,7 +164,7 @@ trail_map %>%
   ) 
 ```
 
-```{r Finding the number of Intersections per Trail, message = FALSE}
+```{r Finding the number of Intersections per Trail, message = FALSE , results=hide}
 ind_trail <- function(name_arg) {
   macleish_layers[["trails"]] %>%
     filter(name == name_arg)
