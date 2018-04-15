@@ -3,11 +3,7 @@ title: "Mini-Project 3: The Road Not Taken"
 author: "Jay-Ho Chung"
 date: "4/13/2018"
 output: 
-<<<<<<< HEAD
-    html_document:
-=======
   html_document:
->>>>>>> 4aa05ee3c61a85393fcf9fdec7893ef21973bf8b
     theme: spacelab
     df_print: paged
     code_folding: hide
