@@ -154,7 +154,7 @@ qpal <- colorFactor(c("green", "yellow", "red"),
                      domain = trail_cont$level)
 
 leaflet(data = trail_cont) %>%
-  addTiles() %>% # Adding tiles fro the background
+  addTiles() %>% # Adding tiles from the background
   addPolylines(data = trails , 
                color = ~qpal(trail_cont$level), 
                label = ~name) %>%
@@ -164,9 +164,35 @@ leaflet(data = trail_cont) %>%
             #labFormat = labelFormat(suffix = " NPS Difficulty Scale"))
 ```
 
-qpal <- colorQuantile("RdYlBu", countries$gdp_md_est, n = 5)
-map %>%
-  addPolygons(stroke = FALSE, smoothFactor = 0.2, fillOpacity = 1,
-    color = ~qpal(gdp_md_est)
-  ) %>%
-  addLegend(pal = qpal, values = ~gdp_md_est, opacity = 1)
+
+```{r}
+ind_trail <- function(name_arg) {
+  macleish_layers[["trails"]] %>%
+    filter(name == name_arg)
+}
+
+int_trail <- function(trail_name) {
+  trail_name %>%
+    st_intersects(macleish_layers[["contours_3m"]], sparse = FALSE)
+}
+
+num_int <- function(true_int) {
+  length(true_int[true_int == TRUE])
+}
+
+number_int <- function(t_name) {
+  num_int(int_trail(ind_trail(t_name)))
+}
+```
+
+```{r}
+number_int("Driveway")
+number_int("Easy Out")
+number_int("entry trail")
+number_int("Vernal Pool Loop")
+number_int("Porcupine Trail")
+number_int("Popular Hill Road")
+number_int("Eastern Loop")
+number_int("Western Loop")
+number_int("Snowmobile Trail")
+```
