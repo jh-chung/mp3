@@ -159,3 +159,40 @@ leaflet(data = trail_cont) %>%
             title = "Difficulty",
             labFormat = labelFormat(suffix = " NPS Difficulty Scale"))
 ```
+
+```{r}
+ind_trail <- function(name_arg) {
+  macleish_layers[["trails"]] %>%
+    filter(name == name_arg)
+}
+
+int_trail <- function(trail_name) {
+  trail_name %>%
+    st_intersects(macleish_layers[["contours_3m"]], sparse = FALSE)
+}
+
+num_int <- function(true_int) {
+  length(true_int[true_int == TRUE])
+}
+
+number_int <- function(t_name) {
+  num_int(int_trail(ind_trail(t_name)))
+}
+```
+
+```{r}
+number_int("Driveway")
+number_int("Easy Out")
+number_int("entry trail")
+number_int("Vernal Pool Loop")
+number_int("Porcupine Trail")
+number_int("Popular Hill Road")
+number_int("Eastern Loop")
+number_int("Western Loop")
+number_int("Snowmobile Trail")
+```
+
+
+
+
+
