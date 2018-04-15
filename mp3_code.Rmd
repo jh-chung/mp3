@@ -2,12 +2,12 @@
 title: "Mini-Project 3: The Road Not Taken"
 author: "Jay-Ho Chung"
 date: "4/13/2018"
-output: html_document
+output: 
+  html_document:
     theme: spacelab
     df_print: paged
     code_folding: hide
 ---
-
 
 ```{r Packaages, message=FALSE, warning=FALSE}
 library(sf)
