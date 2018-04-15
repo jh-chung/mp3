@@ -110,14 +110,16 @@ hard_trail <- trail_cont %>%
 qpal <- colorFactor(c("green", "yellow", "red"), 
                      domain = trail_cont$level) # Assigning a color factor to the difficulty.
 
-leaflet(data = trail_cont) %>%
-  addTiles(group = "OpenStreetMap") %>%
-  addProviderTiles("Esri.WorldTopoMap", group = "Topography") %>%
-  addProviderTiles("Esri.WorldImagery", group = "Satellite") %>%
-  addProviderTiles("Stamen.TonerLite", group = "Toner Lite") %>%
+# Building an interactive trail map
+trail_map <- leaflet(data = trail_cont) %>%
+  addTiles(group = "OpenStreetMap") %>% # Open street map view
+  addProviderTiles("Esri.WorldTopoMap", group = "Topography") %>% # Contour view in feet
+  addProviderTiles("Esri.WorldImagery", group = "Satellite") %>% # Satellite View
+  addProviderTiles("Stamen.TonerLite", group = "Toner Lite") %>% # Toner lite
   addPolylines(data = trail_cont , 
                color = ~qpal(trail_cont$level), 
-               label = ~name , group = "All Trails") %>%
+               label = ~name , group = "All Trails") %>% # Mapping all of the trails
+  # Specifying for each of the type of trails
   addPolylines(data = easy_trail, 
                color = ~qpal(easy_trail$level),
                label = ~name, group = "Easy Trails") %>% 
@@ -129,57 +131,35 @@ leaflet(data = trail_cont) %>%
                label = ~name, group = "Hard Trails") %>% 
   addLegend("bottomleft", pal = qpal, 
             values = ~level, 
-            title = "Difficulty (NPS Difficulty, All Easy)") %>%
+            title = "Difficulty (NPS: All Easy)") %>% # Making it clear that all of these trails are easy
   addLayersControl(
   baseGroups = c("OpenStreetMap", "Topography", "Satellite", "Toner Lite"),    
   overlayGroups = c("All Trails" , "Easy Trails" , "Medium Trails" , "Hard Trails") ,
     options = layersControlOptions(collapsed = TRUE)
-  ) 
+  ) # adding layer controls
+trail_map
 ```
 
 ```{r (Map with Bells and Whistles)}
-qpal <- colorFactor(c("green", "yellow", "red"), 
-                     domain = trail_cont$level) # Assignig a color factor to the difficulty of each trail
+trail_map %>%
+  addPolygons(data = macleish_layers[["contours_3m"]] , weight = 1 , fillOpacity = 0.01 , group = "Contours (3 m)" , color = "lightgrey") %>% # Incase we want different contour
 
-leaflet(data = trail_cont) %>%
-  addTiles(group = "OpenStreetMap") %>%
-  addProviderTiles("Esri.WorldTopoMap", group = "Topography") %>%
-  addProviderTiles("Esri.WorldImagery", group = "Satellite") %>%
-  addProviderTiles("Stamen.TonerLite", group = "Toner Lite") %>%
-  addPolylines(data = trail_cont , 
-               color = ~qpal(trail_cont$level), 
-               label = ~name , group = "All Trails") %>%
-  addPolylines(data = easy_trail, 
-               color = ~qpal(easy_trail$level),
-               label = ~name, group = "Easy Trails") %>% 
-  addPolylines(data = medium_trail, 
-               color = ~qpal(medium_trail$level),
-               label = ~name, group = "Medium Trails") %>% 
-  addPolylines(data = hard_trail, 
-               color = ~qpal(hard_trail$level),
-               label = ~name, group = "Hard Trails") %>% 
-  addLegend("bottomleft", pal = qpal, 
-            values = ~level, 
-            title = "Difficulty (NPS Difficulty, All Easy)") %>%
+  addPolygons(data = macleish_layers[["boundary"]], weight = 1, fillOpacity = 0.1, group = "Boundaries" , color = "purple" , label = "Boundaries") %>% # Showing the boundaries
 
-  addPolygons(data = macleish_layers[["contours_3m"]] , weight = 1 , fillOpacity = 0.01 , group = "Contours (3 m)" , color = "lightgrey") %>%
+  addMarkers(data = macleish_layers[["challenge_courses"]],  group = "Challenge Courses" , popup = ~cmt) %>% # Identifying the numerous challenge courses
 
-  addPolygons(data = macleish_layers[["boundary"]], weight = 1, fillOpacity = 0.1, group = "Boundaries" , color = "purple" , label = "Boundaries") %>%
-
-  addMarkers(data = macleish_layers[["challenge_courses"]],  group = "Challenge Courses" , popup = ~cmt) %>%
-
-  addPolylines(data = macleish_layers[["streams"]], weight = 1, group = "Streams") %>%
-  addPolygons(data = macleish_layers[["forests"]], weight = 1, group = "Forests" , color = "green" , label = ~Sheet1__Na) %>%
-  addPolygons(data = macleish_layers[["research"]], weight = 1, group = "Research Plots" , color = "brown" ,label = ~OBJECTID) %>%
+  addPolylines(data = macleish_layers[["streams"]], weight = 1, group = "Streams") %>% # showing streams
+  addPolygons(data = macleish_layers[["forests"]], weight = 1, group = "Forests" , color = "green" , label = ~Sheet1__Na) %>% # showing green forests
+  addPolygons(data = macleish_layers[["research"]], weight = 1, group = "Research Plots" , color = "brown" ,label = ~OBJECTID) %>% # Showing research plots
   addPolygons(data = macleish_layers[["buildings"]], 
-              weight = 1, popup = ~name,  color = "grey" , group = "Buildings") %>%
+              weight = 1, popup = ~name,  color = "grey" , group = "Buildings") %>% # showing buildings
   addMarkers(data = macleish_layers[["landmarks"]], 
              popup = ~Label, group = "Landmarks") %>%
   
   
     addLayersControl(
     baseGroups = c("OpenStreetMap", "Topography", "Satellite", "Toner Lite"),
-    overlayGroups = c("All Trails" , "Easy Trails" , "Medium Trails" , "Hard Trails" , "Boundaries" ,"Streams" , "Forests" , "Research Plots" , "Buildings" , "Landmarks", "Challenge Courses" , "Contours (3 m)") ,
+    overlayGroups = c("All Trails" , "Easy Trails" , "Medium Trails" , "Hard Trails" , "Boundaries" ,"Streams" , "Forests" , "Research Plots" , "Buildings" , "Landmarks", "Challenge Courses" , "Contours (3 m)") , # Including all of the groups
     options = layersControlOptions(collapsed = TRUE)
   ) 
 ```
