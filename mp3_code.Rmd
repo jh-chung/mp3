@@ -9,7 +9,7 @@ output:
     code_folding: hide
 ---
 
-```{r Packaages, message=FALSE, warning=FALSE}
+```{r (Packaages), message=FALSE, warning=FALSE}
 library(sf)
 library(macleish)
 library(leaflet)
@@ -17,29 +17,14 @@ library(tidyverse)
 library(viridisLite)
 ```
 
-```{r Identifying Quickly}
-macleish_layers[["trails"]] # 15 trails, geometry: Linestring, projection is longlat
-```
-
-```{r}
-trails <- macleish_layers[["trails"]] %>% 
-  mutate(length = st_length(geometry)) %>% 
-  group_by(name) %>% 
-  summarize(total_length = sum(length))
-
-leaflet() %>% 
-  addTiles() %>% 
-  addPolylines(data = trails, popup = ~name)
-```
-
-```{r, eval=FALSE}
+```{r, eval=TRUE}
 url <- "http://download.massgis.digital.mass.gov/shapefiles/state/contours250k.zip"
 local_file <- basename(url)
 download.file(url, destfile = local_file)
 unzip(local_file)
 ```
 
-```{r, eval = FALSE}
+```{r, eval = TRUE}
 boundary <- macleish_layers[["boundary"]]
 contour <- st_read("CONTOURS250K_ARC.shp") %>%
   st_transform(4326)
@@ -116,25 +101,6 @@ leaflet(contour_data) %>%
             labFormat = labelFormat(suffix = " ft."))
 ```
 
-```{r}
-cont_trail <- st_join(trails, contour_data, join = st_within) %>% 
-  mutate(diff_level = change / total_length)
-  # group_by(name.x)
-```
-
-
-
-```{r}
-cont_trail <- st_join(trails, contour_data, join = st_within) %>% 
-  mutate(hard_meas = sqrt(2*(contour_data$change)*(trails$total_length))) %>%
-  arrange(desc(hard_meas))
-```
-
-IDEA: Total elevation change / trail length
-Also include layers and see how many times each trail intersects with the contours
-
-Also maybe should think about getting units to be the same and maybe thinking of better measure of what makes a trail hard
-
 
 ```{r (Combing Trails and Contour)}
 trail_cont <- st_join(trails, contour_data, join = st_within , suffix = c("name" = "name")) %>% # st_within is the join type
@@ -147,7 +113,6 @@ trail_cont <- st_join(trails, contour_data, join = st_within , suffix = c("name"
   rename("name" = "nameNA")
 ```
 
-res <- df %>% mutate(category=cut(a, breaks=c(-Inf, 0.5, 0.6, Inf), labels=c("low","middle","high")))
 
 ```{r}
 easy_trail <- trail_cont %>% 
@@ -158,6 +123,37 @@ medium_trail <- trail_cont %>%
 
 hard_trail <- trail_cont %>% 
   filter(level == "Hard")
+```
+
+```{r (Interactive Map of Trails)}
+qpal <- colorFactor(c("green", "yellow", "red"), 
+                     domain = trail_cont$level) # Assignig a color factor. to the difficulty.
+
+leaflet(data = trail_cont) %>%
+  addTiles(group = "OpenStreetMap") %>%
+  addProviderTiles("Esri.WorldTopoMap", group = "Topography") %>%
+  addProviderTiles("Esri.WorldImagery", group = "Satellite") %>%
+  addProviderTiles("Stamen.TonerLite", group = "Toner Lite") %>%
+  addPolylines(data = trail_cont , 
+               color = ~qpal(trail_cont$level), 
+               label = ~name , group = "All Trails") %>%
+  addPolylines(data = easy_trail, 
+               color = ~qpal(easy_trail$level),
+               label = ~name, group = "Easy Trails") %>% 
+  addPolylines(data = medium_trail, 
+               color = ~qpal(medium_trail$level),
+               label = ~name, group = "Medium Trails") %>% 
+  addPolylines(data = hard_trail, 
+               color = ~qpal(hard_trail$level),
+               label = ~name, group = "Hard Trails") %>% 
+  addLegend("bottomleft", pal = qpal, 
+            values = ~level, 
+            title = "Difficulty (Adjusted NPS Difficulty Scale)") %>%
+  addLayersControl(
+  baseGroups = c("OpenStreetMap", "Topography", "Satellite", "Toner Lite"),    
+  overlayGroups = c("All Trails" , "Easy Trails" , "Medium Trails" , "Hard Trails") ,
+    options = layersControlOptions(collapsed = TRUE)
+  ) 
 ```
 
 ```{r (Map with Bells and Whistles)}
@@ -184,7 +180,7 @@ leaflet(data = trail_cont) %>%
   addLegend("bottomleft", pal = qpal, 
             values = ~level, 
             title = "Difficulty (Adjusted NPS Difficulty Scale)") %>%
-            #labFormat = labelFormat(suffix = " NPS Difficulty Scale"))
+
   addPolygons(data = macleish_layers[["contours_3m"]] , weight = 1 , fillOpacity = 0.01 , group = "Contours (3 m)" , color = "lightgrey") %>%
 
   addPolygons(data = macleish_layers[["boundary"]], weight = 1, fillOpacity = 0.1, group = "Boundaries" , color = "purple" , label = "Boundaries") %>%
@@ -203,7 +199,7 @@ leaflet(data = trail_cont) %>%
     addLayersControl(
     baseGroups = c("OpenStreetMap", "Topography", "Satellite", "Toner Lite"),
     overlayGroups = c("All Trails" , "Easy Trails" , "Medium Trails" , "Hard Trails" , "Boundaries" ,"Streams" , "Forests" , "Research Plots" , "Buildings" , "Landmarks", "Challenge Courses" , "Contours (3 m)") ,
-    options = layersControlOptions(collapsed = FALSE)
+    options = layersControlOptions(collapsed = TRUE)
   ) 
 ```
 
