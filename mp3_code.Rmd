@@ -118,6 +118,13 @@ cont_trail <- st_join(trails, contour_data, join = st_within) %>%
 ```
 
 
+
+```{r}
+cont_trail <- st_join(trails, contour_data, join = st_within) %>% 
+  mutate(hard_meas = sqrt(2*(contour_data$change)*(trails$total_length))) %>%
+  arrange(desc(hard_meas))
+```
+
 IDEA: Total elevation change / trail length
 Also include layers and see how many times each trail intersects with the contours
 
