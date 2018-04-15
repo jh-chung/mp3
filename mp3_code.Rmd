@@ -170,7 +170,7 @@ leaflet(data = trail_cont) %>%
   addProviderTiles("Esri.WorldTopoMap", group = "Topography") %>%
   addProviderTiles("Esri.WorldImagery", group = "Satellite") %>%
   addProviderTiles("Stamen.TonerLite", group = "Toner Lite") %>%
-  addPolylines(data = trails , 
+  addPolylines(data = trail_cont , 
                color = ~qpal(trail_cont$level), 
                label = ~name , group = "All Trails") %>%
   addPolylines(data = easy_trail, 
