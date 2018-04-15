@@ -130,7 +130,7 @@ leaflet(data = trail_cont) %>%
                label = ~name, group = "Hard Trails") %>% 
   addLegend("bottomleft", pal = qpal, 
             values = ~level, 
-            title = "Difficulty (Adjusted NPS Difficulty Scale)") %>%
+            title = "Difficulty (NPS Difficulty, All Easy)") %>%
   addLayersControl(
   baseGroups = c("OpenStreetMap", "Topography", "Satellite", "Toner Lite"),    
   overlayGroups = c("All Trails" , "Easy Trails" , "Medium Trails" , "Hard Trails") ,
@@ -161,7 +161,7 @@ leaflet(data = trail_cont) %>%
                label = ~name, group = "Hard Trails") %>% 
   addLegend("bottomleft", pal = qpal, 
             values = ~level, 
-            title = "Difficulty (Adjusted NPS Difficulty Scale)") %>%
+            title = "Difficulty (NPS Difficulty, All Easy)") %>%
 
   addPolygons(data = macleish_layers[["contours_3m"]] , weight = 1 , fillOpacity = 0.01 , group = "Contours (3 m)" , color = "lightgrey") %>%
 
