@@ -236,24 +236,141 @@ leaflet(data = contour_data) %>%
 
 ```{r (Combing Trails and Contour)}
 trail_cont <- st_join(trails, contour_data, join = st_within , suffix = c("name" = "name")) %>% # st_within is the join type
-  mutate(hard_meas = sqrt(2*(contour_data$change*0.000621371)*(trails$total_length*0.000621371))) %>% # Using the equation from the National Park Service
+  mutate(hard_meas = sqrt(2*(contour_data$change*3.28084)*(trails$total_length*0.000621371))) %>% # Using the equation from the National Park Service
   select(nameNA , change , total_length , hard_meas) %>%
   arrange((hard_meas)) # Want to arrange it
 
 ```
 
+```{r (Functions to find the Intersection)}
+ind_trail <- function(name_arg) {
+  macleish_layers[["trails"]] %>%
+    filter(name == name_arg)
+}
+
+int_trail <- function(trail_name) {
+  trail_name %>%
+    st_intersects(macleish_layers[["contours_3m"]], sparse = FALSE)
+}
+
+num_int <- function(true_int) {
+  length(true_int[true_int == TRUE])
+}
+
+number_int <- function(t_name) {
+  num_int(int_trail(ind_trail(t_name)))
+}
+```
+
+```{r}
+number_int("Driveway")
+number_int("Easy Out")
+number_int("entry trail")
+number_int("Vernal Pool Loop")
+number_int("Porcupine Trail")
+number_int("Popular Hill Road")
+number_int("Eastern Loop")
+number_int("Western Loop")
+number_int("Snowmobile Trail")
+```
+
+
+
+```{r (Combing Trails and Contour)}
+trail_cont <- st_join(trails, contour_data, join = st_within , suffix = c("name" = "name")) %>% # st_within is the join type
+  mutate(hard_meas = sqrt(2*(contour_data$change*3.28084)*(trails$total_length*0.000621371))) %>% # Using the equation from the National Park Service
+  mutate(level = cut(hard_meas, 
+                          breaks = c(-Inf, 5, 22, Inf), 
+                          labels = c("Easy", "Moderate", "Difficult"))) %>% # Assigning the names values.
+  select(nameNA , change , total_length , hard_meas, level) %>%
+  arrange((hard_meas)) # Want to arrange it
+
+```
+
+res <- df %>% mutate(category=cut(a, breaks=c(-Inf, 0.5, 0.6, Inf), labels=c("low","middle","high")))
+
+```{r}
+easy_trails <- trail_cont %>%
+  
+qpal <- colorFactor(c("green", "yellow", "red"), 
+                     domain = trail_cont$level) # Assignig a color factor. to the difficulty.
+
+leaflet(data = trail_cont) %>%
+  addTiles(group = "OpenStreetMap") %>%
+  addProviderTiles("Esri.WorldTopoMap", group = "Topography") %>%
+  addProviderTiles("Esri.WorldImagery", group = "Satellite") %>%
+  addProviderTiles("Stamen.TonerLite", group = "Toner Lite") %>%
+  addPolylines(data = trails , 
+               color = ~qpal(trail_cont$level), 
+               label = ~name , group = "All Trails") %>%
+  addPolylines(data = trails , 
+               color = ~qpal(trail_cont$level== "Easy"), 
+               label = ~name , group = "Easy Trails") %>%
+  addLegend("bottomright", pal = qpal, 
+            values = ~level, 
+            title = "Difficulty (NPS Difficulty Scale)") %>%
+            #labFormat = labelFormat(suffix = " NPS Difficulty Scale"))
+    addLayersControl(
+    baseGroups = c("OpenStreetMap", "Topography", "Satellite", "Toner Lite"),
+    overlayGroups = c("All Trails" , "Easy Trails") ,
+    options = layersControlOptions(collapsed = FALSE)
+  ) 
+```
+
+
+
+
+```{r}
+leaflet(data = trail_cont) %>%
+  addTiles(group = "OpenStreetMap") %>%
+  addProviderTiles("Esri.WorldTopoMap", group = "Topography") %>%
+  addProviderTiles("Esri.WorldImagery", group = "Satellite") %>%
+  addProviderTiles("Stamen.TonerLite", group = "Toner Lite") %>%
+  addPolygons(data = macleish_layers[["buildings"]], 
+              weight = 1, popup = ~ name, group = "Structures") %>%
+#  addPolygons(data = macleish_layers[["reservoir"]], 
+#              weight = 1, group = "Structures") %>%
+  addMarkers(data = macleish_layers[["landmarks"]], 
+             popup = ~ Label, group = "Structures") %>%
+  addPolylines(data = macleish_layers[["trails"]], 
+               weight = 1, color = "brown",
+               popup = ~ name, group = "Structures") %>%
+  # Natural elements
+  addPolygons(data = macleish_layers[["forests"]], 
+              color = ~pal1(Sheet1__Na), weight = 0.1, 
+              fillOpacity = 0.2,
+              popup = ~ Sheet1__Na, group = "Natural") %>%
+  addPolygons(data = macleish_layers[["wetlands"]], 
+              weight = 1, group = "Natural") %>%
+  addPolylines(data = macleish_layers[["streams"]], 
+               weight = 2, group = "Natural") %>%
+  # Layers control
+  addLayersControl(
+    baseGroups = c("OpenStreetMap", "Topography", "Satellite", "Toner Lite"),
+    overlayGroups = c("Boundaries", "Structures", "Natural"),
+    options = layersControlOptions(collapsed = FALSE)
+  ) 
+```
 
 ```{r}
 pal1 <- colorNumeric(
   palette = "viridis",
   domain = trail_cont$hard_meas
 )
-
 leaflet(data = trail_cont) %>%
-  addTiles() %>% # Adding tiles fro the background
-  addPolylines(data = trails , color = ~pal1(trail_cont$hard_meas) , label = ~name) %>%
+  addTiles(group = "OpenStreetMap") %>%
+  addProviderTiles("Esri.WorldTopoMap", group = "Topography") %>%
+  addProviderTiles("Esri.WorldImagery", group = "Satellite") %>%
+  addProviderTiles("Stamen.TonerLite", group = "Toner Lite") %>%
+  addPolylines(data = trails , color = ~pal1(trail_cont$hard_meas) , label = ~name , group = "Trails") %>%
   addLegend("bottomright", pal = pal1, 
             values = ~hard_meas, 
             title = "Difficulty",
-            labFormat = labelFormat(suffix = " NPS Difficulty Scale"))
+            labFormat = labelFormat(suffix = " NPS Difficulty Scale")) %>%
+  addLayersControl(
+  baseGroups = c("OpenStreetMap", "Topography", "Satellite", "Toner Lite"),
+  overlayGroups = c("Trails") , 
+  options = layersControlOptions(collapsed = FALSE)
+  ) 
+
 ```
