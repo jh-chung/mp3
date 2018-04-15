@@ -150,6 +150,18 @@ trail_cont <- st_join(trails, contour_data, join = st_within , suffix = c("name"
 res <- df %>% mutate(category=cut(a, breaks=c(-Inf, 0.5, 0.6, Inf), labels=c("low","middle","high")))
 
 ```{r}
+easy_trail <- trail_cont %>% 
+  filter(level == "Easy")
+
+medium_trail <- trail_cont %>% 
+  filter(level == "Medium")
+
+hard_trail <- trail_cont %>% 
+  filter(level == "Hard")
+```
+
+
+```{r}
 qpal <- colorFactor(c("green", "yellow", "red"), 
                      domain = trail_cont$level) # Assignig a color factor. to the difficulty.
 
@@ -161,6 +173,15 @@ leaflet(data = trail_cont) %>%
   addPolylines(data = trails , 
                color = ~qpal(trail_cont$level), 
                label = ~name , group = "All Trails") %>%
+  addPolylines(data = easy_trail, 
+               color = ~qpal(trail_cont$level) , 
+               label = ~name, group = "Easy Trails") %>% 
+  addPolylines(data = medium_trail, 
+               color = ~qpal(trail_cont$level) , 
+               label = ~name, group = "Medium Trails") %>% 
+  addPolylines(data = hard_trail, 
+               color = ~qpal(trail_cont$level) , 
+               label = ~name, group = "Hard Trails") %>% 
   addLegend("bottomright", pal = qpal, 
             values = ~level, 
             title = "Difficulty (NPS Difficulty Scale)") %>%
