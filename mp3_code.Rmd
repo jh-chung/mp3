@@ -3,11 +3,7 @@ title: "Mini-Project 3: The Road Not Taken"
 author: "Jay-Ho Chung"
 date: "4/13/2018"
 output: 
-<<<<<<< HEAD
     html_document:
-=======
-  html_document:
->>>>>>> ed7b0782561c75bf50375fc1640898fd41395d9f
     theme: spacelab
     df_print: paged
     code_folding: hide
@@ -155,17 +151,25 @@ res <- df %>% mutate(category=cut(a, breaks=c(-Inf, 0.5, 0.6, Inf), labels=c("lo
 
 ```{r}
 qpal <- colorFactor(c("green", "yellow", "red"), 
-                     domain = trail_cont$level)
+                     domain = trail_cont$level) # Assignig a color factor. to the difficulty.
 
 leaflet(data = trail_cont) %>%
-  addTiles() %>% # Adding tiles from the background
+  addTiles(group = "OpenStreetMap") %>%
+  addProviderTiles("Esri.WorldTopoMap", group = "Topography") %>%
+  addProviderTiles("Esri.WorldImagery", group = "Satellite") %>%
+  addProviderTiles("Stamen.TonerLite", group = "Toner Lite") %>%
   addPolylines(data = trails , 
                color = ~qpal(trail_cont$level), 
-               label = ~name) %>%
+               label = ~name , group = "All Trails") %>%
   addLegend("bottomright", pal = qpal, 
             values = ~level, 
-            title = "Difficulty (NPS Difficulty Scale)")
+            title = "Difficulty (NPS Difficulty Scale)") %>%
             #labFormat = labelFormat(suffix = " NPS Difficulty Scale"))
+    addLayersControl(
+    baseGroups = c("OpenStreetMap", "Topography", "Satellite", "Toner Lite"),
+    overlayGroups = c("All Trails") ,
+    options = layersControlOptions(collapsed = FALSE)
+  ) 
 ```
 
 
