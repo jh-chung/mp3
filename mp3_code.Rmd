@@ -17,35 +17,6 @@ library(tidyverse)
 library(viridisLite)
 ```
 
-```{r, eval=TRUE}
-url <- "http://download.massgis.digital.mass.gov/shapefiles/state/contours250k.zip"
-local_file <- basename(url)
-download.file(url, destfile = local_file)
-unzip(local_file)
-```
-
-```{r, eval = TRUE}
-boundary <- macleish_layers[["boundary"]]
-contour <- st_read("CONTOURS250K_ARC.shp") %>%
-  st_transform(4326)
-contour
-macleish_trail <- st_intersects(boundary, contour)
-```
-
-```{r, eval = FALSE}
-contour %>%
-  select(CONTOUR_FT) %>%
-  plot()
-```
-
-```{r, eval = FALSE}
-leaflet() %>% 
-  addTiles() %>% 
-  addPolygons(data = boundary)
-# macleish_trail %>% 
-#   plot()
-```
-
 ```{r}
 hiking_trails <- macleish_layers[["trails"]] %>%
   mutate(lengt = st_length(geometry)) %>% 
@@ -101,7 +72,6 @@ leaflet(contour_data) %>%
             labFormat = labelFormat(suffix = " ft."))
 ```
 
-
 ```{r (Combing Trails and Contour)}
 trail_cont <- st_join(trails, contour_data, join = st_within , suffix = c("name" = "name")) %>% # st_within is the join type
   mutate(hard_meas = sqrt(2*(contour_data$change*3.28084)*(trails$total_length*0.000621371))) %>% # Using the equation from the National Park Service
@@ -125,7 +95,7 @@ hard_trail <- trail_cont %>%
   filter(level == "Hard")
 ```
 
-```{r (Interactive Map of Trails)}
+```{r (Interactive Map of Only Trails)}
 qpal <- colorFactor(c("green", "yellow", "red"), 
                      domain = trail_cont$level) # Assignig a color factor. to the difficulty.
 
