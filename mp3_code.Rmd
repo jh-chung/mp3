@@ -171,15 +171,6 @@ leaflet(data = trail_cont) %>%
   addProviderTiles("Esri.WorldTopoMap", group = "Topography") %>%
   addProviderTiles("Esri.WorldImagery", group = "Satellite") %>%
   addProviderTiles("Stamen.TonerLite", group = "Toner Lite") %>%
-  addPolygons(data = macleish_layers[["research"]], weight = 1, group = "Human Presence") %>%
-  addPolygons(data = macleish_layers[["boundary"]], weight = 1, fillOpacity = 0.1, group = "Boundaries" , color = "purple") %>%
-  addPolygons(data = macleish_layers[["buildings"]], 
-              weight = 1, popup = ~name,  color = "grey" , group = "Human Presence") %>%
-  addMarkers(data = macleish_layers[["challenge_courses"]],  group = "Human Presence") %>%
-  addMarkers(data = macleish_layers[["landmarks"]], 
-             popup = ~Label, group = "Human Presence") %>%
-  addPolylines(data = macleish_layers[["streams"]], weight = 1, group = "Nature") %>%
-  addPolygons(data = macleish_layers[["forests"]], weight = 1, group = "Nature") %>%
   addPolylines(data = trail_cont , 
                color = ~qpal(trail_cont$level), 
                label = ~name , group = "All Trails") %>%
@@ -194,11 +185,26 @@ leaflet(data = trail_cont) %>%
                label = ~name, group = "Hard Trails") %>% 
   addLegend("bottomright", pal = qpal, 
             values = ~level, 
-            title = "Difficulty (NPS Difficulty Scale)") %>%
+            title = "Difficulty (Adjusted NPS Difficulty Scale)") %>%
             #labFormat = labelFormat(suffix = " NPS Difficulty Scale"))
+  
+
+  addPolygons(data = macleish_layers[["boundary"]], weight = 1, fillOpacity = 0.1, group = "Boundaries" , color = "purple" , label = "Boundaries") %>%
+
+  addMarkers(data = macleish_layers[["challenge_courses"]],  group = "Challenge Courses" , popup = ~cmt) %>%
+
+  addPolylines(data = macleish_layers[["streams"]], weight = 1, group = "Streams") %>%
+  addPolygons(data = macleish_layers[["forests"]], weight = 1, group = "Forests" , color = "green" , label = ~Sheet1__Na) %>%
+  addPolygons(data = macleish_layers[["research"]], weight = 1, group = "Research Plots" , color = "brown" ,label = ~OBJECTID) %>%
+  addPolygons(data = macleish_layers[["buildings"]], 
+              weight = 1, popup = ~name,  color = "grey" , group = "Buildings") %>%
+  addMarkers(data = macleish_layers[["landmarks"]], 
+             popup = ~Label, group = "Landmarks") %>%
+  
+  
     addLayersControl(
     baseGroups = c("OpenStreetMap", "Topography", "Satellite", "Toner Lite"),
-    overlayGroups = c("All Trails" , "Easy Trails" , "Medium Trails" , "Hard Trails" , "Boundaries" , "Nature" , "Human Presence") ,
+    overlayGroups = c("All Trails" , "Easy Trails" , "Medium Trails" , "Hard Trails" , "Boundaries" ,"Streams" , "Forests" , "Research Plots" , "Buildings" , "Landmarks", "Challenge Courses") ,
     options = layersControlOptions(collapsed = FALSE)
   ) 
 
