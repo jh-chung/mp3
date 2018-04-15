@@ -1,6 +1,6 @@
 ---
 title: "Mini-Project 3: The Road Not Taken"
-author: "Jay-Ho Chung"
+author: "Jay-Ho Chung, Nathan Ives, Brigitte Goeler-Slough"
 date: "4/13/2018"
 output: 
     html_document:
@@ -143,7 +143,8 @@ trail_cont <- st_join(trails, contour_data, join = st_within , suffix = c("name"
                           breaks = c(-Inf, 5, 22, Inf), 
                           labels = c("Easy", "Medium", "Hard"))) %>% 
   select(nameNA , change , total_length , hard_meas, level) %>%
-  arrange((hard_meas)) # Want to arrange it
+  arrange((hard_meas)) %>% # Want to arrange it
+  rename("name" = "nameNA")
 
 ```
 
@@ -188,7 +189,7 @@ leaflet(data = trail_cont) %>%
             #labFormat = labelFormat(suffix = " NPS Difficulty Scale"))
     addLayersControl(
     baseGroups = c("OpenStreetMap", "Topography", "Satellite", "Toner Lite"),
-    overlayGroups = c("All Trails") ,
+    overlayGroups = c("All Trails" , "Easy Trails" , "Medium Trails" , "Hard Trails") ,
     options = layersControlOptions(collapsed = FALSE)
   ) 
 ```
