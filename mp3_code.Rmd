@@ -199,7 +199,6 @@ leaflet(data = trail_cont) %>%
   ) 
 ```
 
-
 ```{r Finding the number of Intersections per Trail, message = FALSE}
 ind_trail <- function(name_arg) {
   macleish_layers[["trails"]] %>%
