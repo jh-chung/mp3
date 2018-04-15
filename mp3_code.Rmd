@@ -4,9 +4,9 @@ author: "Jay-Ho Chung, Nathan Ives, Brigitte Goeler-Slough"
 date: "4/13/2018"
 output: 
     html_document:
+    code_folding: hide
     theme: spacelab
     df_print: paged
-    code_folding: hide
 ---
 
 ```{r (Packaages), message=FALSE, warning=FALSE}
@@ -14,17 +14,26 @@ library(sf)
 library(macleish)
 library(leaflet)
 library(tidyverse)
-library(viridisLite)
+library(viridisLite) # for colors
 ```
 
-```{r}
+```{r (Altering for total length and change in elevation), warning = FALSE, message = FALSE}
+# Looking at the trails from macleish layers, computing the total_length and saving it for each trail
 trails <- macleish_layers[["trails"]] %>% 
-  mutate(length = st_length(geometry)) %>% 
+  mutate(length = st_length(geometry)) %>% # finding the length of trails
+  group_by(name) %>% # grouping the trails by their names to compute different lengths for each trail
+  summarize(total_length = sum(length)) # Finding the total length for each trail
+
+cont_data <- st_join(trails, m3_contour) # Need to join these to associate a name and a change in elevation for each trail
+
+# Looking at the contour_data
+contour_data <- cont_data %>% 
   group_by(name) %>% 
-  summarize(total_length = sum(length))
+  summarize(low = min(ELEV_FT), high = max(ELEV_FT),
+            change = high - low)
 ```
 
-```{r, warning = FALSE}
+```{r (Mapping a few things)/(Do we need this code?) , eval = FALSE}
 hiking_trails <- macleish_layers[["trails"]] %>%
   mutate(lengt = st_length(geometry)) %>% 
   group_by(name) %>% 
@@ -39,29 +48,15 @@ leaflet(data = hiking_trails) %>%
   addTiles() %>%
   addPolylines(color = ~pal(t_length)) %>%
   addLegend("bottomright", pal = pal, values = ~t_length, title = "Trail Length", labFormat = labelFormat(suffix =  "m"))
-```
 
-```{r}
+
 leaflet() %>%
   addTiles() %>%
   addPolylines(data = macleish_layers[["trails"]], color = "black", weight = 3, opacity = .5) %>%
   addPolylines(data = macleish_layers[["contours_3m"]], weight = 1, opacity = .5)
-```
 
-```{r}
 m3_contour <- macleish_layers[["contours_3m"]] %>% 
   select(ELEV_M, ELEV_FT, INDEX_ARC, SHAPE_LEN, geometry)
-```
-
-```{r, warning = FALSE, message = FALSE}
-macleish_cont <- st_intersects(trails,
-                               macleish_layers[["contours_3m"]])
-cont_data <- st_join(trails, m3_contour)
-
-contour_data <- cont_data %>% 
-  group_by(name) %>% 
-  summarize(low = min(ELEV_FT), high = max(ELEV_FT),
-            change = high - low)
 
 pal1 <- colorNumeric(
   palette = "viridis",
@@ -79,26 +74,26 @@ leaflet(contour_data) %>%
             labFormat = labelFormat(suffix = " ft."))
 ```
 
-```{r, warning = FALSE, message = FALSE}
-cont_trail <- st_join(trails, contour_data, join = st_within) %>% 
-  mutate(hard_meas = sqrt(2*(contour_data$change)*(trails$total_length))) %>%
-  arrange(desc(hard_meas))
-```
 
-```{r (Combing Trails and Contour), warning = FALSE, message = FALSE}
-trail_cont <- st_join(trails, contour_data, join = st_within , suffix = c("name" = "name")) %>% # st_within is the join type
-  mutate(hard_meas = sqrt(2*(contour_data$change*3.28084)*(trails$total_length*0.000621371))) %>% # Using the equation from the National Park Service
+```{r (Combining Trails and Contour), warning = FALSE, message = FALSE}
+trail_cont <- st_join(trails, contour_data, join = st_within , suffix = c("name" = "name")) %>% 
+  # st_within is the join type. Joining trails and contour_data for the total_length and change
+  # Joining the trails and contour_data to have total_length and elevation change
+  mutate(hard_meas = sqrt(2*(contour_data$change*3.28084)*(trails$total_length*0.000621371))) %>% 
+  # Using the equation from the National Park Service
+  # Converting the elevation change into ft from meters and trails into miles from meters.
   mutate(level = cut(hard_meas, 
                           breaks = c(-Inf, 5, 22, Inf), 
                           labels = c("Easy", "Medium", "Hard"))) %>% 
-  select(nameNA , change , total_length , hard_meas, level) %>%
-  arrange((hard_meas)) %>% # Want to arrange it
-  rename("name" = "nameNA")
+  # Easy, Medium, Hard to differentiate each of the trails.
+  select(nameNA , change , total_length , hard_meas, level) %>% # Selecting these variables
+  arrange(hard_meas) %>% # Want to arrange it
+  rename("name" = "nameNA") # Renaming because nameNA is a by product from the joins
 ```
 
-```{r}
+```{r (Classifying dataframes to classify the trails)}
 easy_trail <- trail_cont %>% 
-  filter(level == "Easy")
+  filter(level == "Easy") # Filtering out the easy trails, making it easy to color the easy trails
 
 medium_trail <- trail_cont %>% 
   filter(level == "Medium")
@@ -109,7 +104,7 @@ hard_trail <- trail_cont %>%
 
 ```{r (Interactive Map of Only Trails)}
 qpal <- colorFactor(c("green", "yellow", "red"), 
-                     domain = trail_cont$level) # Assignig a color factor. to the difficulty.
+                     domain = trail_cont$level) # Assigning a color factor to the difficulty.
 
 leaflet(data = trail_cont) %>%
   addTiles(group = "OpenStreetMap") %>%
@@ -140,7 +135,7 @@ leaflet(data = trail_cont) %>%
 
 ```{r (Map with Bells and Whistles)}
 qpal <- colorFactor(c("green", "yellow", "red"), 
-                     domain = trail_cont$level) # Assignig a color factor. to the difficulty.
+                     domain = trail_cont$level) # Assignig a color factor to the difficulty of each trail
 
 leaflet(data = trail_cont) %>%
   addTiles(group = "OpenStreetMap") %>%
