@@ -160,7 +160,7 @@ hard_trail <- trail_cont %>%
   filter(level == "Hard")
 ```
 
-```{r}
+```{r (Map with Bells and Whistles)}
 qpal <- colorFactor(c("green", "yellow", "red"), 
                      domain = trail_cont$level) # Assignig a color factor. to the difficulty.
 
@@ -185,7 +185,7 @@ leaflet(data = trail_cont) %>%
             values = ~level, 
             title = "Difficulty (Adjusted NPS Difficulty Scale)") %>%
             #labFormat = labelFormat(suffix = " NPS Difficulty Scale"))
-  
+  addPolygons(data = macleish_layers[["contours_3m"]] , weight = 1 , fillOpacity = 0.01 , group = "Contours (3 m)" , color = "lightgrey") %>%
 
   addPolygons(data = macleish_layers[["boundary"]], weight = 1, fillOpacity = 0.1, group = "Boundaries" , color = "purple" , label = "Boundaries") %>%
 
@@ -202,10 +202,9 @@ leaflet(data = trail_cont) %>%
   
     addLayersControl(
     baseGroups = c("OpenStreetMap", "Topography", "Satellite", "Toner Lite"),
-    overlayGroups = c("All Trails" , "Easy Trails" , "Medium Trails" , "Hard Trails" , "Boundaries" ,"Streams" , "Forests" , "Research Plots" , "Buildings" , "Landmarks", "Challenge Coursey") ,
+    overlayGroups = c("All Trails" , "Easy Trails" , "Medium Trails" , "Hard Trails" , "Boundaries" ,"Streams" , "Forests" , "Research Plots" , "Buildings" , "Landmarks", "Challenge Courses" , "Contours (3 m)") ,
     options = layersControlOptions(collapsed = FALSE)
   ) 
-
 ```
 
 
