@@ -4,12 +4,13 @@ author: "Jay-Ho Chung, Nathan Ives, Brigitte Goeler-Slough"
 date: "4/13/2018"
 output: 
     html_document:
-    code_folding: hide
-    theme: spacelab
-    df_print: paged
+      code_folding: hide
+      theme: spacelab
+      df_print: paged
 ---
 
 ```{r (Packaages), message=FALSE, warning=FALSE}
+# Loading Packages
 library(sf)
 library(macleish)
 library(leaflet)
@@ -23,6 +24,11 @@ trails <- macleish_layers[["trails"]] %>%
   mutate(length = st_length(geometry)) %>% # finding the length of trails
   group_by(name) %>% # grouping the trails by their names to compute different lengths for each trail
   summarize(total_length = sum(length)) # Finding the total length for each trail
+
+
+
+m3_contour <- macleish_layers[["contours_3m"]] %>% 
+  select(ELEV_M, ELEV_FT, INDEX_ARC, SHAPE_LEN, geometry)
 
 cont_data <- st_join(trails, m3_contour) # Need to join these to associate a name and a change in elevation for each trail
 
@@ -55,8 +61,6 @@ leaflet() %>%
   addPolylines(data = macleish_layers[["trails"]], color = "black", weight = 3, opacity = .5) %>%
   addPolylines(data = macleish_layers[["contours_3m"]], weight = 1, opacity = .5)
 
-m3_contour <- macleish_layers[["contours_3m"]] %>% 
-  select(ELEV_M, ELEV_FT, INDEX_ARC, SHAPE_LEN, geometry)
 
 pal1 <- colorNumeric(
   palette = "viridis",
