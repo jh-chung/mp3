@@ -182,7 +182,7 @@ num_int <- function(true_int) {
 number_int <- function(t_name) {
   num_int(int_trail(ind_trail(t_name)))
 }
-
+# Here, we want to find the number of times that a trail changes in elevation by finding how many times it intersects the contours. Reid suggested that we look at this to make sure that our trails are, infact, difficult for people to walk through.
 number_int("Driveway")
 number_int("Easy Out")
 number_int("entry trail")
