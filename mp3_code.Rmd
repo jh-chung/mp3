@@ -161,10 +161,8 @@ hard_trail <- trail_cont %>%
 ```
 
 ```{r}
-pal1 <- colorNumeric(
-  palette = "viridis",
-  domain = trail_cont$hard_meas
-)
+qpal <- colorFactor(c("green", "yellow", "red"), 
+                     domain = trail_cont$level) # Assignig a color factor. to the difficulty.
 
 leaflet(data = trail_cont) %>%
   addTiles(group = "OpenStreetMap") %>%
@@ -183,7 +181,7 @@ leaflet(data = trail_cont) %>%
   addPolylines(data = hard_trail, 
                color = ~qpal(hard_trail$level),
                label = ~name, group = "Hard Trails") %>% 
-  addLegend("bottomright", pal = qpal, 
+  addLegend("bottomleft", pal = qpal, 
             values = ~level, 
             title = "Difficulty (Adjusted NPS Difficulty Scale)") %>%
             #labFormat = labelFormat(suffix = " NPS Difficulty Scale"))
@@ -204,7 +202,7 @@ leaflet(data = trail_cont) %>%
   
     addLayersControl(
     baseGroups = c("OpenStreetMap", "Topography", "Satellite", "Toner Lite"),
-    overlayGroups = c("All Trails" , "Easy Trails" , "Medium Trails" , "Hard Trails" , "Boundaries" ,"Streams" , "Forests" , "Research Plots" , "Buildings" , "Landmarks", "Challenge Courses") ,
+    overlayGroups = c("All Trails" , "Easy Trails" , "Medium Trails" , "Hard Trails" , "Boundaries" ,"Streams" , "Forests" , "Research Plots" , "Buildings" , "Landmarks", "Challenge Coursey") ,
     options = layersControlOptions(collapsed = FALSE)
   ) 
 
