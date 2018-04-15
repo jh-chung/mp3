@@ -1,9 +1,9 @@
 ---
 title: "Mini-Project 3: The Road Not Taken"
-author: "Jay-Ho Chung"
+author: "Jay-Ho Chung, Nathan Ives, Brigitte Goeler-Slough"
 date: "4/13/2018"
 output: 
-  html_document:
+    html_document:
     theme: spacelab
     df_print: paged
     code_folding: hide
@@ -142,26 +142,59 @@ trail_cont <- st_join(trails, contour_data, join = st_within , suffix = c("name"
   mutate(level = cut(hard_meas, 
                           breaks = c(-Inf, 5, 22, Inf), 
                           labels = c("Easy", "Medium", "Hard"))) %>% 
+<<<<<<< HEAD
   select(nameNA , change , total_length , hard_meas, level) %>%
+  arrange((hard_meas)) %>% # Want to arrange it
+  rename("name" = "nameNA")
+=======
+  rename("name" = "nameNA") %>% 
+  select(name, change , total_length , hard_meas, level) %>%
   arrange((hard_meas)) # Want to arrange it
+>>>>>>> 8b37798161bf00bdf69e95eac88af1d0b92a8b95
 
 ```
 
 res <- df %>% mutate(category=cut(a, breaks=c(-Inf, 0.5, 0.6, Inf), labels=c("low","middle","high")))
 
 ```{r}
+easy_trail <- trail_cont %>% 
+  filter(level == "Easy")
+
+medium_trail <- trail_cont %>% 
+  filter(level == "Medium")
+
+hard_trail <- trail_cont %>% 
+  filter(level == "Hard")
+```
+
+
+```{r}
 qpal <- colorFactor(c("green", "yellow", "red"), 
-                     domain = trail_cont$level)
+                     domain = trail_cont$level) # Assignig a color factor. to the difficulty.
 
 leaflet(data = trail_cont) %>%
-  addTiles() %>% # Adding tiles from the background
+  addTiles(group = "OpenStreetMap") %>%
+  addProviderTiles("Esri.WorldTopoMap", group = "Topography") %>%
+  addProviderTiles("Esri.WorldImagery", group = "Satellite") %>%
+  addProviderTiles("Stamen.TonerLite", group = "Toner Lite") %>%
+  addPolylines(data = easy_trail, 
+               label = ~name, group = "Easy Trails") %>% 
+  addPolylines(data = medium_trail, 
+               label = ~name, group = "Medium Trails") %>% 
+  addPolylines(data = hard_trail, 
+               label = ~name, group = "Hard Trails") %>% 
   addPolylines(data = trails , 
                color = ~qpal(trail_cont$level), 
-               label = ~name) %>%
+               label = ~name , group = "All Trails") %>%
   addLegend("bottomright", pal = qpal, 
             values = ~level, 
-            title = "Difficulty (NPS Difficulty Scale)")
+            title = "Difficulty (NPS Difficulty Scale)") %>%
             #labFormat = labelFormat(suffix = " NPS Difficulty Scale"))
+    addLayersControl(
+    baseGroups = c("OpenStreetMap", "Topography", "Satellite", "Toner Lite"),
+    overlayGroups = c("All Trails" , "Easy Trails" , "Medium Trails" , "Hard Trails") ,
+    options = layersControlOptions(collapsed = FALSE)
+  ) 
 ```
 
 
