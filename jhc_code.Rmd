@@ -235,6 +235,24 @@ leaflet(data = contour_data) %>%
 
 
 ```{r}
-cont_trail <- st_join(trails, contour_data, join = st_within) %>% 
-  mutate(hard_meas = sqrt(2*(contour_data$change)*(trails$total_length)))
+trail_cont <- st_join(trails, macleish_layers[["contours_3m"]], join = st_within ) %>% 
+  select(total_length , name , geometry)
+  mutate(hard_meas = sqrt(2*(contour_data$change*0.000621371)*(trails$total_length*0.000621371))) %>%
+  arrange(desc(hard_meas))
+```
+
+
+```{r}
+pal1 <- colorNumeric(
+  palette = "viridis",
+  domain = trail_cont$hard_meas
+)
+
+leaflet(data = trail_cont) %>%
+  addTiles() %>%
+  addPolylines(data = trails , color = ~pal1(trail_cont$hard_meas) , label = ~name) %>%
+  addLegend("bottomright", pal = pal1, 
+            values = ~hard_meas, 
+            title = "Difficulty",
+            labFormat = labelFormat(suffix = " NPS Difficulty Scale"))
 ```
