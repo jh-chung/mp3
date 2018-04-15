@@ -234,11 +234,12 @@ leaflet(data = contour_data) %>%
 ```
 
 
-```{r}
-trail_cont <- st_join(trails, macleish_layers[["contours_3m"]], join = st_within ) %>% 
-  select(total_length , name , geometry)
-  mutate(hard_meas = sqrt(2*(contour_data$change*0.000621371)*(trails$total_length*0.000621371))) %>%
-  arrange(desc(hard_meas))
+```{r (Combing Trails and Contour)}
+trail_cont <- st_join(trails, contour_data, join = st_within , suffix = c("name" = "name")) %>% # st_within is the join type
+  mutate(hard_meas = sqrt(2*(contour_data$change*0.000621371)*(trails$total_length*0.000621371))) %>% # Using the equation from the National Park Service
+  select(nameNA , change , total_length , hard_meas) %>%
+  arrange((hard_meas)) # Want to arrange it
+
 ```
 
 
@@ -249,7 +250,7 @@ pal1 <- colorNumeric(
 )
 
 leaflet(data = trail_cont) %>%
-  addTiles() %>%
+  addTiles() %>% # Adding tiles fro the background
   addPolylines(data = trails , color = ~pal1(trail_cont$hard_meas) , label = ~name) %>%
   addLegend("bottomright", pal = pal1, 
             values = ~hard_meas, 
