@@ -1,15 +1,20 @@
 ---
-title: "mp3_code"
+title: "Mini-Project 3: The Road Not Taken"
 author: "Jay-Ho Chung"
-date: "4/9/2018"
+date: "4/13/2018"
 output: html_document
+    theme: spacelab
+    df_print: paged
+    code_folding: hide
 ---
+
 
 ```{r Packaages, message=FALSE, warning=FALSE}
 library(sf)
 library(macleish)
 library(leaflet)
 library(tidyverse)
+library(viridisLite)
 ```
 
 ```{r Identifying Quickly}
@@ -130,11 +135,11 @@ Also include layers and see how many times each trail intersects with the contou
 
 Also maybe should think about getting units to be the same and maybe thinking of better measure of what makes a trail hard
 
-```{r}
-trail_cont <- st_join(trails, macleish_layers[["contours_3m"]], join = st_within ) %>% 
-  select(total_length , name , geometry)
-  mutate(hard_meas = sqrt(2*(contour_data$change*0.000621371)*(trails$total_length*0.000621371))) %>%
-  arrange(desc(hard_meas))
+```{r (Combing Trails and Contour)}
+trail_cont <- st_join(trails, contour_data, join = st_within ) %>% # st_withing is the join type
+  select(total_length , name , change , geometry) %>% # We only need these variables
+  mutate(hard_meas = sqrt(2*(contour_data$change*0.000621371)*(trails$total_length*0.000621371))) %>% # Using the equation from the National Park Service
+  arrange((hard_meas)) # Want to arrange it in desc(hard_meas)
 ```
 
 
@@ -145,7 +150,7 @@ pal1 <- colorNumeric(
 )
 
 leaflet(data = trail_cont) %>%
-  addTiles() %>%
+  addTiles() %>% # Adding tiles fro the background
   addPolylines(data = trails , color = ~pal1(trail_cont$hard_meas) , label = ~name) %>%
   addLegend("bottomright", pal = pal1, 
             values = ~hard_meas, 
