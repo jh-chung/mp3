@@ -175,13 +175,10 @@ leaflet(data = trail_cont) %>%
                color = ~qpal(trail_cont$level), 
                label = ~name , group = "All Trails") %>%
   addPolylines(data = easy_trail, 
-               color = ~qpal(trail_cont$level) , 
                label = ~name, group = "Easy Trails") %>% 
   addPolylines(data = medium_trail, 
-               color = ~qpal(trail_cont$level) , 
                label = ~name, group = "Medium Trails") %>% 
   addPolylines(data = hard_trail, 
-               color = ~qpal(trail_cont$level) , 
                label = ~name, group = "Hard Trails") %>% 
   addLegend("bottomright", pal = qpal, 
             values = ~level, 
