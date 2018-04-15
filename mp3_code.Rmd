@@ -139,23 +139,34 @@ Also maybe should think about getting units to be the same and maybe thinking of
 ```{r (Combing Trails and Contour)}
 trail_cont <- st_join(trails, contour_data, join = st_within , suffix = c("name" = "name")) %>% # st_within is the join type
   mutate(hard_meas = sqrt(2*(contour_data$change*3.28084)*(trails$total_length*0.000621371))) %>% # Using the equation from the National Park Service
-  select(nameNA , change , total_length , hard_meas) %>%
+  mutate(level = cut(hard_meas, 
+                          breaks = c(-Inf, 5, 22, Inf), 
+                          labels = c("Easy", "Medium", "Hard"))) %>% 
+  select(nameNA , change , total_length , hard_meas, level) %>%
   arrange((hard_meas)) # Want to arrange it
 
 ```
 
+res <- df %>% mutate(category=cut(a, breaks=c(-Inf, 0.5, 0.6, Inf), labels=c("low","middle","high")))
 
 ```{r}
-pal1 <- colorNumeric(
-  palette = "viridis",
-  domain = trail_cont$hard_meas
-)
+qpal <- colorFactor(c("green", "yellow", "red"), 
+                     domain = trail_cont$level)
 
 leaflet(data = trail_cont) %>%
   addTiles() %>% # Adding tiles fro the background
-  addPolylines(data = trails , color = ~pal1(trail_cont$hard_meas) , label = ~name) %>%
-  addLegend("bottomright", pal = pal1, 
-            values = ~hard_meas, 
-            title = "Difficulty",
-            labFormat = labelFormat(suffix = " NPS Difficulty Scale"))
+  addPolylines(data = trails , 
+               color = ~qpal(trail_cont$level), 
+               label = ~name) %>%
+  addLegend("bottomright", pal = qpal, 
+            values = ~level, 
+            title = "Difficulty (NPS Difficulty Scale)")
+            #labFormat = labelFormat(suffix = " NPS Difficulty Scale"))
 ```
+
+qpal <- colorQuantile("RdYlBu", countries$gdp_md_est, n = 5)
+map %>%
+  addPolygons(stroke = FALSE, smoothFactor = 0.2, fillOpacity = 1,
+    color = ~qpal(gdp_md_est)
+  ) %>%
+  addLegend(pal = qpal, values = ~gdp_md_est, opacity = 1)
