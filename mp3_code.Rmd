@@ -145,9 +145,6 @@ trail_cont <- st_join(trails, contour_data, join = st_within , suffix = c("name"
   select(nameNA , change , total_length , hard_meas, level) %>%
   arrange((hard_meas)) %>% # Want to arrange it
   rename("name" = "nameNA") %>% 
-  select(name, change , total_length , hard_meas, level) %>%
-  arrange((hard_meas)) # Want to arrange it
-
 ```
 
 res <- df %>% mutate(category=cut(a, breaks=c(-Inf, 0.5, 0.6, Inf), labels=c("low","middle","high")))
