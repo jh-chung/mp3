@@ -9,6 +9,40 @@ output:
       df_print: paged
 ---
 
+# Introduction
+
+## The Problem
+We classified the nine trails at the MacLeish Field Station by difficulty for this mini-project. In order to understand how difficult a trail was, we considered two primary factors: the change in elevation and the length of trail. Elevation and length were considered because, according to Ada and Archibald MacLeish Field Station manager Reid Bertone-Johnson, they are the primary factors that determine the difficulty of the trails at MacLeish. In order to keep track of all our changes and work collaboratively on this assignment, we created a GitHub repository [^1].
+
+We also attempted to include the composition of the soil, but Reid informed us that there is not adequate data to consider soil composition as a variable.
+
+[^1]: https://github.com/jh-chung/mp3/blob/master/mp3_code.Rmd
+
+# Method
+## Data Wrangling
+
+With the knowledge that elevation and length were primary factors for difficulty, we used the length and elevation from `macleish_layers["trails"]` and `macleish_layers["contours_3m"]`. We calculated the total length of each trail and the change in elevation, saving those two variables into `trails` and `contour_data`. Our group combined the two dataframes and used the formula from the National Park Service to determine the difficulty of each trail, converting the elevation to feet and the length to miles. (https://www.nps.gov/shen/planyourvisit/how-to-determine-hiking-difficulty.htm)
+We noticed that all of MacLeish’s trails would be considered easy by the NPS and noted this in the legend. We separated each of the 9 trails by their `hard_meas` values to assign a “Easy”, “Moderate”, and “Difficult” rating system to differentiate between the trails and created a color palette to illustrate the differentiation. Based on our calculations and the shifted NPS formula, any trail with a difficulty score less than five is considered easy, between five and 22 is considered medium, and above 22 is considered hard. We used these difficulty bins so that three trails fit in each of the three difficulty levels.
+
+With the intention of making our map more readable and usable, we used Control Layers to provide different views of our map and added boundaries, a view of the forests, streams, landmarks, challenge courses, and research plots.
+
+# Analysis
+
+In addition to the change in elevation, Reid recommended that we specifically look at how many times a trail intersected with the contours to determine how many times a trail changed its elevation instead of simply looking at the overall change in elevation.
+
+The interactive map shows that the harder trails are longer than the less difficult trails, as the `hard_meas` values from the NPS formula demonstrate.
+
+In addition, after taking a closer look at the topography, it becomes clear that all of the harder trails not only have a larger change in elevation, but also intersect with the contours more frequently. Code chunk 8 illustrates the number of times that a specific trail intersects with the contours. All of the easiest trails had the least number of intersections with the contours while harder trails intersected with the contours more frequently. This illustrates that Reid was correct; not only are trails with a greater overall change in elevation more difficult, but more so those that change elevation more frequently. We found that this matched our difficulty ranking because the change in elevation corresponds with the number of times the trail changes its elevation, which it does not always do for every trail following the NPS ranking.
+
+
+## Suggestions
+With our second map, we can understand a few things about the trails with respect to other facilities at MacLeish. 
+
+Looking at the accessibility to different locations, only medium or hard trails lead to the challenge courses, research plots, and campsites. While this may be due to the elevation, Smith College could use the suggestions from other groups that designed a new trail to make an easier path to these locations. The majority buildings, on the other hand, are accessible through easy, medium, and difficult trails. The price for a trail seems to range from $6,500 to $8,000, but the environmental impact could be too much if it includes some deforestation, which is also not allowed on certain parts of the property. 
+
+Another suggestion we’ve thought of is to include a sign with the approximate time needed to complete each trail. We could do this using information on the NPS website that gives an average speed for each type of trail. This would be a relatively cheap option to give visitors more direction during their time at MacLeish.
+
+
 ```{r (Packages), message=FALSE, warning=FALSE}
 # Loading Packages
 library(sf)
