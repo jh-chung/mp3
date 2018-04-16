@@ -184,3 +184,11 @@ number_int("Western Loop")
 number_int("Snowmobile Trail")
 ```
 
+```{r}
+trail_time <- trail_cont %>%
+  mutate(m_length = total_length*0.000621371) %>%
+  mutate(time  = m_length*(2/3)) %>%
+  mutate(minutes = time*60) %>%
+  select(name, minutes)
+trail_time
+```
