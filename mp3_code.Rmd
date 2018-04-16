@@ -137,7 +137,7 @@ trail_map
 
 ```{r (Map with Bells and Whistles)}
 trail_map %>%
-  addPolygons(data = macleish_layers[["contours_3m"]] , weight = 1 , fillOpacity = 0.01 , group = "Contours (3 m)" , color = "lightgrey") %>% # Incase we want different contour
+  addPolylines(data = macleish_layers[["contours_3m"]] , weight = 1 , fillOpacity = .1 , group = "Contours (3 m)" , color = "grey") %>% # Incase we want different contour
 
   addPolygons(data = macleish_layers[["boundary"]], weight = 1, fillOpacity = 0.1, group = "Boundaries" , color = "purple" , label = "Boundaries") %>% # Showing the boundaries
 
@@ -148,8 +148,8 @@ trail_map %>%
   addPolygons(data = macleish_layers[["research"]], weight = 1, group = "Research Plots" , color = "brown" ,label = ~OBJECTID) %>% # Showing research plots
   addPolygons(data = macleish_layers[["buildings"]], 
               weight = 1, popup = ~name,  color = "grey" , group = "Buildings") %>% # showing buildings
-  addMarkers(data = macleish_layers[["landmarks"]], 
-             popup = ~Label, group = "Landmarks") %>%
+    addCircleMarkers(data = macleish_layers[["landmarks"]], 
+             popup = ~Label, group = "Landmarks", radius = 3) %>%
     addLayersControl(
     baseGroups = c("OpenStreetMap", "Topography", "Satellite", "Toner Lite"),
     overlayGroups = c("All Trails" , "Easy Trails" , "Medium Trails" , "Hard Trails" , "Boundaries" ,"Streams" , "Forests" , "Research Plots" , "Buildings" , "Landmarks", "Challenge Courses" , "Contours (3 m)") , # Including all of the groups
