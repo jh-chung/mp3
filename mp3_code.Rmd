@@ -9,7 +9,7 @@ output:
       df_print: paged
 ---
 
-```{r (Packaages), message=FALSE, warning=FALSE}
+```{r (Packages), message=FALSE, warning=FALSE}
 # Loading Packages
 library(sf)
 library(macleish)
@@ -24,8 +24,6 @@ trails <- macleish_layers[["trails"]] %>%
   mutate(length = st_length(geometry)) %>% # finding the length of trails
   group_by(name) %>% # grouping the trails by their names to compute different lengths for each trail
   summarize(total_length = sum(length)) # Finding the total length for each trail
-
-
 
 m3_contour <- macleish_layers[["contours_3m"]] %>% 
   select(ELEV_M, ELEV_FT, INDEX_ARC, SHAPE_LEN, geometry)
@@ -55,12 +53,10 @@ leaflet(data = hiking_trails) %>%
   addPolylines(color = ~pal(t_length)) %>%
   addLegend("bottomright", pal = pal, values = ~t_length, title = "Trail Length", labFormat = labelFormat(suffix =  "m"))
 
-
 leaflet() %>%
   addTiles() %>%
   addPolylines(data = macleish_layers[["trails"]], color = "black", weight = 3, opacity = .5) %>%
   addPolylines(data = macleish_layers[["contours_3m"]], weight = 1, opacity = .5)
-
 
 pal1 <- colorNumeric(
   palette = "viridis",
@@ -77,7 +73,6 @@ leaflet(contour_data) %>%
             title = "Trail Change in Elevation",
             labFormat = labelFormat(suffix = " ft."))
 ```
-
 
 ```{r (Combining Trails and Contour), warning = FALSE, message = FALSE}
 trail_cont <- st_join(trails, contour_data, join = st_within , suffix = c("name" = "name")) %>% 
@@ -155,8 +150,6 @@ trail_map %>%
               weight = 1, popup = ~name,  color = "grey" , group = "Buildings") %>% # showing buildings
   addMarkers(data = macleish_layers[["landmarks"]], 
              popup = ~Label, group = "Landmarks") %>%
-  
-  
     addLayersControl(
     baseGroups = c("OpenStreetMap", "Topography", "Satellite", "Toner Lite"),
     overlayGroups = c("All Trails" , "Easy Trails" , "Medium Trails" , "Hard Trails" , "Boundaries" ,"Streams" , "Forests" , "Research Plots" , "Buildings" , "Landmarks", "Challenge Courses" , "Contours (3 m)") , # Including all of the groups
