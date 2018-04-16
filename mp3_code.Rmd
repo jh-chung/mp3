@@ -134,12 +134,12 @@ trail_map
 trail_map %>%
   addPolylines(data = macleish_layers[["contours_3m"]] , weight = 1 , fillOpacity = .1 , group = "Contours (3 m)" , color = "grey") %>% # Incase we want different contour
 
-  addPolygons(data = macleish_layers[["boundary"]], weight = 1, fillOpacity = 0.1, group = "Boundaries" , color = "purple" , label = "Boundaries") %>% # Showing the boundaries
+  addPolylines(data = macleish_layers[["boundary"]], weight = 3, group = "Boundaries" , color = "purple" , label = "Boundaries") %>% # Showing the boundaries
 
   addMarkers(data = macleish_layers[["challenge_courses"]],  group = "Challenge Courses" , popup = ~cmt) %>% # Identifying the numerous challenge courses
 
   addPolylines(data = macleish_layers[["streams"]], weight = 1, group = "Streams") %>% # showing streams
-  addPolygons(data = macleish_layers[["forests"]], weight = 1, group = "Forests" , color = "green" , label = ~Sheet1__Na) %>% # showing green forests
+  addPolygons(data = macleish_layers[["forests"]], weight = 1, group = "Forests" , color = "green" , label = ~Sheet1__Na, opacity = .5) %>% # showing green forests
   addPolygons(data = macleish_layers[["research"]], weight = 1, group = "Research Plots" , color = "brown" ,label = ~OBJECTID) %>% # Showing research plots
   addPolygons(data = macleish_layers[["buildings"]], 
               weight = 1, popup = ~name,  color = "grey" , group = "Buildings") %>% # showing buildings
@@ -149,7 +149,9 @@ trail_map %>%
     baseGroups = c("OpenStreetMap", "Topography", "Satellite", "Toner Lite"),
     overlayGroups = c("All Trails" , "Easy Trails" , "Medium Trails" , "Hard Trails" , "Boundaries" ,"Streams" , "Forests" , "Research Plots" , "Buildings" , "Landmarks", "Challenge Courses" , "Contours (3 m)") , # Including all of the groups
     options = layersControlOptions(collapsed = TRUE)
-  ) 
+  ) %>%
+  addCircles(lng = -72.678154, lat = 42.450976, popup = "Group Campsite", color = "black", radius = 50) %>%
+  addCircles(lng = -72.679581, lat = 42.458549, popup = "Remote Campsite", color = "black", radius = 50)
 ```
 
 ```{r Finding the number of Intersections per Trail, message = FALSE , results = "hide"}
