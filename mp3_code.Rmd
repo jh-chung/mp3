@@ -1,5 +1,5 @@
 ---
-title: "Mini-Project 3: The Road Not Taken"
+title: "Mini-Project 3: Ain't No Mountain High Enough"
 author: "Jay-Ho Chung, Nathan Ives, Brigitte Goeler-Slough"
 date: "4/13/2018"
 output: 
