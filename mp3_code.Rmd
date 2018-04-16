@@ -35,13 +35,14 @@ contour_data <- cont_data %>%
   group_by(name) %>% 
   summarize(low = min(ELEV_FT), high = max(ELEV_FT),
             change = high - low)
-```
 
-```{r (Mapping trail length and elevation change), warning = FALSE}
 hiking_trails <- macleish_layers[["trails"]] %>%
   mutate(lengt = st_length(geometry)) %>% 
   group_by(name) %>% 
   mutate(t_length = sum(lengt))
+```
+
+```{r (Mapping trail length and elevation change), warning = FALSE}
 pal <- colorNumeric(
   palette = "viridis",
   domain = hiking_trails$t_length
@@ -180,3 +181,4 @@ number_int("Eastern Loop")
 number_int("Western Loop")
 number_int("Snowmobile Trail")
 ```
+
